@@ -1,0 +1,11 @@
+# Ignore all `.log` files
+*.log
+
+# Ignore the `node_modules` directory (common for JavaScript projects)
+node_modules/
+
+# Ignore compiled Python files
+*.pyc
+
+# Ignore environment files
+.env
