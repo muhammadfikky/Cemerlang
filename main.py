@@ -92,7 +92,7 @@ if "Home" in add_radio:
     ### Features Available:
     :material/local_fire_department: :red-background[**Skill Detector**] - Find out which engineers have the skills you’re looking for!  
     :material/upload: :orange-background[**Upload Files**] - Easily upload and explore the contents of your spreadsheet files.      
-    :material/build: :blue-background[**Tools**] - To make your work and even life easier! :rocket:                               
+    :material/build: :blue-background[**Tools**] - Make your work and even life easier! :rocket:                               
     :material/robot_2: :green-background[**Games**] - Play interactive games right inside Streamlit!  
     """)
 
