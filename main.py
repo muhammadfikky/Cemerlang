@@ -38,44 +38,38 @@ all_teams = {
     "tr": tr_team,
 }
 
-# BACKGROUND
-def get_base64_of_bin_file(bin_file):
-    with open(bin_file, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
+# # BACKGROUND
+# def get_base64_of_bin_file(bin_file):
+#     with open(bin_file, "rb") as f:
+#         data = f.read()
+#     return base64.b64encode(data).decode()
 
-def set_bg_images(main_bg):
-    bin_str_main = get_base64_of_bin_file(main_bg)
-    # bin_str_sidebar = get_base64_of_bin_file(sidebar_bg)
-    page_bg_img = f'''
-    <style>
-    .stApp::before {{
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0,5); /* Black overlay with 50% transparency */
-        z-index: -1; /* Keeps it behind other content */
-    }}
-    .stApp {{
-        background-image: url("data:image/png;base64,{bin_str_main}");
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: 0px -1200px;
-    }}
-    [data-testid="stSidebar"] {{
-        background-image: url("data:image/png;base64,{bin_str_main}");
-        background-size: center;
-        background-repeat: no-repeat;
-        background-position: 0px -800px;
-    }}
-    </style>
-    '''
-    st.markdown(page_bg_img, unsafe_allow_html=True)
+# def set_bg_images(main_bg):
+#     bin_str_main = get_base64_of_bin_file(main_bg)
+#     # bin_str_sidebar = get_base64_of_bin_file(sidebar_bg)
+#     page_bg_img = f'''
+#     <style>
+#     .stApp::before {{
+#         content: "";
+#         position: absolute;
+#         top: 0;
+#         left: 0;
+#         width: 100%;
+#         height: 100%;
+#         background: rgba(0, 0, 0, 0,5); /* Black overlay with 50% transparency */
+#         z-index: -1; /* Keeps it behind other content */
+#     }}
+#     .stApp {{
+#         background-image: url("data:image/png;base64,{bin_str_main}");
+#         background-size: cover;
+#         background-repeat: no-repeat;
+#         background-position: 0px 0px;
+#     }}
+#     </style>
+#     '''
+#     st.markdown(page_bg_img, unsafe_allow_html=True)
 
-set_bg_images("image/mountains-5655059_1920.png")
+# set_bg_images("image/sky-34536_1920.png")
 
 # SIDEBAR
 add_radio = None
@@ -136,6 +130,7 @@ if "Home" in add_radio:
     """)
 
     st.info(":rocket: Use the sidebar to select a feature and start exploring!")
+    st.divider()
 
     if st.button("Click me!", type="secondary"):
         st.toast("To start..")

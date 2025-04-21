@@ -1,0 +1,5 @@
+[theme]
+primaryColor="#FFFFFF"  # White text
+backgroundColor="#008000"  # Green background
+textColor="#000000"  # Black text (for light mode)
+secondaryBackgroundColor="#006400"  # Darker green for contrast
