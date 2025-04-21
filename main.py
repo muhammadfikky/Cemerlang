@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import random
+import base64
+import time
 
 rogers_team = {
     "kurnia",
@@ -36,17 +38,85 @@ all_teams = {
     "tr": tr_team,
 }
 
+# BACKGROUND
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+def set_bg_images(main_bg):
+    bin_str_main = get_base64_of_bin_file(main_bg)
+    # bin_str_sidebar = get_base64_of_bin_file(sidebar_bg)
+    page_bg_img = f'''
+    <style>
+    .stApp::before {{
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0,5); /* Black overlay with 50% transparency */
+        z-index: -1; /* Keeps it behind other content */
+    }}
+    .stApp {{
+        background-image: url("data:image/png;base64,{bin_str_main}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: 0px -1200px;
+    }}
+    [data-testid="stSidebar"] {{
+        background-image: url("data:image/png;base64,{bin_str_main}");
+        background-size: center;
+        background-repeat: no-repeat;
+        background-position: 0px -800px;
+    }}
+    </style>
+    '''
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+
+set_bg_images("image/mountains-5655059_1920.png")
+
+# SIDEBAR
 add_radio = None
 with st.sidebar:
     st.title("MAIN MENU")
     with st.expander("Features"):
         add_radio = st.radio("Select a feature", [":material/home_app_logo: Home", ":material/local_fire_department: Skill Detector", 
                                                   ":material/upload: Upload", ":material/build: Tools", ":material/robot_2: Games"])
-
-# add_radio = None
-# with st.sidebar:
-#     st.header("MAIN MENU")
-#     add_radio = st.radio("",(":material/home_app_logo: Home", ":material/local_fire_department: Skill Detector", ":material/upload: Upload", ":material/robot_2: Games"))
+    with st.expander("Mode"):
+        one_piece = """
+        ┳┓  •      •       ╻
+        ┣┫┏┓┓┏┓┏┓  ┓╋  ┏┓┏┓┃
+        ┻┛┛ ┗┛┗┗┫  ┗┗  ┗┛┛┗• 
+                ┛          
+        ⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠛⠉⠙⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀⠀⠀⢦⣀⡈⢻⣿⣿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠈⣷⡄ ⠙⢿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⣿⣿⣷⣦⣄⠀⠀⢀⣤⣤⣾⣿⠧⠀⠀⠈⢿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠃⠀⠉⠉⠀⠀⠀⠀⢀⣀⣠⣾⣿⣿⣿
+        ⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⠇⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⠋⢀⣾⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⢈⠻⣿⣿⣿⣿⣿⣿⣿
+        ⣿⣿⡇⠀⠸⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⢦⠈⢿⣿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣷⣾⣿⠃⠀⠀⠀⠀⣸⡄⠀⠀⠀⠀⠘⣷⡀⠻⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⢀⣿⣿⡀⠀⠀⠀⠀⢈⣷⡀⠙⣻⣿⣿⣿
+        ⣿⣿⣿⣿⣿⡏⠀⠀⠀⠀⢸⣿⣿⣧⠀⠀⠀⠀ ⠘⣿⣾⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿ ⠀⠀  ⣼⣿⣿⣿⣧⠀⠀⠀  ⠈⣿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⡇  ⠀⠀ ⣿⣿⣿⣿⣿⣿  ⠀  ⠘⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿ ⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠘⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⠀⠀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⢻⣿⣿⣿⣿
+        ⣿⣿⣿⣿⡏⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠈⣿⣿⣿⣿
+        ⣿⣿⣿⡿⠁⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠘⣿⣿⣿
+        ⡿⠛⠉⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀ ⠈⠻⣿
+        ⣷⣶⣶⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣤⣤⣤⣼
+        """
+        perf_mode = st.toggle("Performance Mode")
+        if perf_mode:
+            st.code(one_piece,language=None)
 
 # HOME PAGE
 if "Home" in add_radio:
@@ -66,6 +136,13 @@ if "Home" in add_radio:
     """)
 
     st.info(":rocket: Use the sidebar to select a feature and start exploring!")
+
+    if st.button("Click me!", type="secondary"):
+        st.toast("To start..")
+        time.sleep(0.5)
+        st.toast(":material/west: Go to the sidebar :smile:")
+        time.sleep(0.5)
+        st.toast(":tada: :tada: :tada:")
 
 # IRS MEMBER SKILL DETECTOR
 if "Skill Detector" in add_radio:
