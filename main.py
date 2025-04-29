@@ -160,7 +160,6 @@ if "Skill Detector" in add_radio:
                     st.write("Sorry, nama yg dimasukkan tdk ada dalam list atau coba cek lg ejaannya.")
 
     # MENU 2
-    # menu2 = st.checkbox("Cari skill untuk mendapatkan nama engineer-nya")
     if menu2:
         which_skills = st.multiselect("Masukkan skills-nya:",["rogers","voda","att","sw","tr"])
         button2 = st.button("Process Skill", type="primary")
@@ -180,7 +179,7 @@ if "Skill Detector" in add_radio:
                 for who, what_skills in what_and_whose_skills.items():
                     if all(skill in what_skills for skill in which_skills): # looping all di dict what_and_whose_skills sampe nemu skill yg sama dgn input dari user
                         match.append(who.title())
-                        found = True # kalo gk pake ini error dia
+                        found = True 
 
                 if found:
                     formatted_skills = []
@@ -289,7 +288,7 @@ if "Tools" in add_radio:
         st.write("Upload, Merge, Download! :rocket:")
         st.write("No complicated formulas, no manual copy-pasting! :no_entry:")
         st.write("Seamless and effortless :sunglasses:")
-        st.info("For now it only support xlxs and csv only. :material/info:")
+        st.info("Support xlxs and csv files. :material/info:")
 
         uploaded_files = st.file_uploader("Upload Excel or CSV Files", type=["xlsx", "csv"], accept_multiple_files=True)
 
@@ -418,10 +417,6 @@ if "Games" in add_radio:
                 st.write("You lose! :disappointed:")
 
             st.markdown("🔄 Play Again? :gray[*Because one round is never enough!*]")
-
-
-            # if st.button("🔄 Play Again"):
-            #     st.experimental_user()
 
     with tab2:
         st.title("Welcome to Treasure Island! :coin:")
