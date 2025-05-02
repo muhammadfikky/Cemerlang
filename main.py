@@ -248,16 +248,20 @@ if "Tools" in add_radio:
         st.info("Each parameter has a maximum value of 300. If you require more, you know where the code is and modify yourself 😊")
 
         if button:
-            random_letters = random.choices(letters, k =nr_letters)
-            random_symbols = random.choices(symbols, k =nr_symbols)
-            random_numbers = random.choices(numbers, k =nr_numbers)
+            if nr_letters == 0 and nr_symbols == 0 and nr_numbers == 0:
+                st.warning("⚠️ You haven't entered any numbers! Please provide at least one value.")
 
-            random_pswd = random_letters + random_symbols + random_numbers
-            random.shuffle(random_pswd)
-            final_pswd = "".join(random_pswd)
+            else:
+                random_letters = random.choices(letters, k =nr_letters)
+                random_symbols = random.choices(symbols, k =nr_symbols)
+                random_numbers = random.choices(numbers, k =nr_numbers)
 
-            st.write("Here is your password:")
-            st.write(final_pswd)
+                random_pswd = random_letters + random_symbols + random_numbers
+                random.shuffle(random_pswd)
+                final_pswd = "".join(random_pswd)
+
+                st.write("Here is your password:")
+                st.write(final_pswd)
 
     with tab2:
         st.header("Welcome to BMI Calculator :material/vital_signs:")
