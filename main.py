@@ -278,15 +278,23 @@ if "Tools" in add_radio:
 
         button = st.button("Calculate BMI", type="primary")
         if button:
-            bmi = weight / (height ** 2)
-            if bmi < 18.5:
-                st.write("You are underweight :warning: please pay more attention to your health!")
-            elif bmi < 25:
-                st.write("You have normal weight ✅ keep up the good work! :sunglasses:")
-            elif bmi < 30 :
-                st.write("You are overweight :warning: please pay more attention to your health!")
-            else:
-                st.write("You are obese! 🛑 you need to be aware and pay close attention to your health.")
+            if weight == 0 and height == 0:
+                st.warning("⚠️ Please enter your weight & height.")
+            elif weight == 0:
+                st.warning("⚠️ Please enter your weight.")
+            elif height == 0:
+                st.warning("⚠️ Please enter your height.")
+
+            else:        
+                bmi = weight / (height ** 2)
+                if bmi < 18.5:
+                    st.write("You are underweight :warning: please pay more attention to your health!")
+                elif bmi < 25:
+                    st.write("You have normal weight ✅ keep up the good work! :sunglasses: :tada:")
+                elif bmi < 30 :
+                    st.write("You are overweight :warning: please pay more attention to your health!")
+                else:
+                    st.write("You are obese! 🛑 you need to be aware and pay close attention to your health.")
 
     with tab3:
         import io
