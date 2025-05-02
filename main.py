@@ -244,12 +244,14 @@ if "Tools" in add_radio:
         nr_symbols = st.number_input("How many symbols would you like?",min_value=0, max_value=300, placeholder="Type a number...")
         nr_numbers = st.number_input("How many numbers would you like?",min_value=0, max_value=300, placeholder="Type a number...")
 
-        button = st.button("Generate Password", type="primary")
         st.info("Each parameter has a maximum value of 300. If you require more, you know where the code is and modify yourself 😊")
 
+        button = st.button("Generate Password", type="primary")
+        
+        min_password_length = 8
         if button:
             if nr_letters == 0 and nr_symbols == 0 and nr_numbers == 0:
-                st.warning("⚠️ You haven't entered any numbers! Please provide at least one value.")
+                st.warning("⚠️ You haven't entered any numbers!")
 
             else:
                 random_letters = random.choices(letters, k =nr_letters)
@@ -262,6 +264,8 @@ if "Tools" in add_radio:
 
                 st.write("Here is your password:")
                 st.write(final_pswd)
+                if len(final_pswd) < min_password_length:
+                    st.info(f"Your password is **less than {min_password_length} characters**. Please consider adding more letters, symbols, or numbers for better security :material/info:")
 
     with tab2:
         st.header("Welcome to BMI Calculator :material/vital_signs:")
