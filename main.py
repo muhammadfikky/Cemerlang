@@ -307,46 +307,41 @@ if "Tools" in add_radio:
                 st.info("Please make sure you uploaded the correct files.")
 
                 if st.button("Process",type="primary"):
-                    merged_sheets ={}
-                    progress_text = st.empty()
+                    with st.status("Processing files...", expanded=True) as status:
+                        merged_sheets ={}
+                        for i, file in enumerate(uploaded_files):
+                            if file.name.endswith(".xlsx"):
+                                sheets = pd.read_excel(file, sheet_name=None)
+                                for sheet_name, df in sheets.items():
+                                    merged_sheets.setdefault(sheet_name, pd.DataFrame())
+                                    merged_sheets[sheet_name] = pd.concat([merged_sheets[sheet_name], df], ignore_index=True)
 
-                    progress_bar = st.progress(0)
-                    total_files = len(uploaded_files)
-
-                    for i, file in enumerate(uploaded_files):
-                        if file.name.endswith(".xlsx"):
-                            sheets = pd.read_excel(file, sheet_name=None)
-                            for sheet_name, df in sheets.items():
+                            elif file.name.endswith(".csv"):
+                                df = pd.read_csv(file)
+                                sheet_name = file.name.replace(".csv", "")
                                 merged_sheets.setdefault(sheet_name, pd.DataFrame())
                                 merged_sheets[sheet_name] = pd.concat([merged_sheets[sheet_name], df], ignore_index=True)
 
-                        elif file.name.endswith(".csv"):
-                            df = pd.read_csv(file)
-                            sheet_name = file.name.replace(".csv", "")
-                            merged_sheets.setdefault(sheet_name, pd.DataFrame())
-                            merged_sheets[sheet_name] = pd.concat([merged_sheets[sheet_name], df], ignore_index=True)
-                        
-                        percentage = ((i + 1) / total_files) * 100
-                        progress_bar.progress((i + 1) / total_files)
-                        progress_text.text(f"Progress: {int(percentage)}% completed")
+                        output = io.BytesIO()
+                        with pd.ExcelWriter(output, engine="openpyxl") as writer:
+                            for sheet_name, df in merged_sheets.items():
+                                df.to_excel(writer, sheet_name=sheet_name, index=False)
 
-                    output = io.BytesIO()
-                    with pd.ExcelWriter(output, engine="openpyxl") as writer:
-                        for sheet_name, df in merged_sheets.items():
-                            df.to_excel(writer, sheet_name=sheet_name, index=False)
+                        output.seek(0)
+                        current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        st.session_state.output_filename = f"Merged_Data_{current_time}.xlsx"
+                        st.session_state.merged_file = output
 
-                    output.seek(0)
-                    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    st.session_state.output_filename = f"Merged_Data_{current_time}.xlsx"
-                    st.session_state.merged_file = output
+                        status.update(label="Processing complete!", state="complete", expanded=False)
 
-            if st.session_state.merged_file and st.session_state.output_filename:
-                st.success("Done! Your file is ready for download.")
-                if st.download_button(label="Download",type="primary",
-                                    data=st.session_state.merged_file,
-                                    file_name=st.session_state.output_filename,
-                                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"):
-                    st.markdown(":orange[It is always good to double check. Tools are meant to help you, not to replace you!] :warning:")
+                if st.session_state.merged_file and st.session_state.output_filename:
+                    st.success("Your file is ready for download.")
+                    if st.download_button(label="Download",type="primary",
+                                        data=st.session_state.merged_file,
+                                        file_name=st.session_state.output_filename,
+                                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"):
+                        st.markdown(":orange[It is always good to double check. Especially if you have different columns!] :warning:")
+
 
 # GAMES
 if "Games" in add_radio:
