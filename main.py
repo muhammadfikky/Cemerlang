@@ -245,7 +245,7 @@ if "Tools" in add_radio:
         nr_numbers = st.number_input("How many numbers would you like?",min_value=0, max_value=300, placeholder="Type a number...")
 
         button = st.button("Generate Password", type="primary")
-        st.info("Each parameter has a maximum value of 300. If you require more, please contact me. :material/info:")
+        st.info("Each parameter has a maximum value of 300. If you require more, you know where the code is and modify yourself 😊")
 
         if button:
             random_letters = random.choices(letters, k =nr_letters)
