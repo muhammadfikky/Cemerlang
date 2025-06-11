@@ -3,6 +3,7 @@ import pandas as pd
 import random
 import base64
 import time
+import io
 
 rogers_team = {
     "kurnia",
@@ -229,7 +230,7 @@ if "Upload" in add_radio:
  
 # TOOLS
 if "Tools" in add_radio:
-    tab1, tab2, tab3 = st.tabs(["Password Generator", "BMI Calculator", "File Merger"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Password Generator", "BMI Calculator", "File Merger", "CHGR 1 Generator"])
 
     with tab1:
         st.header("Welcome to the Password Generator :material/encrypted:")
@@ -357,6 +358,110 @@ if "Tools" in add_radio:
                                         file_name=st.session_state.output_filename,
                                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"):
                         st.markdown(":orange[It is always good to double check. Especially if you have different columns!] :warning:")
+
+    with tab4:
+        if "processed" not in st.session_state:
+            st.session_state.processed = False
+        if "extracted_files" not in st.session_state:
+            st.session_state.extracted_files = {}
+
+
+        st.header("CHGR 1 Generator 🚀")
+        st.divider()
+        st.markdown("""
+        ✅ Upload the CIQ file  
+        ✅ Input one or more location codes    
+        ✅ Process Data to Generate script  
+        ✅ Then download the script  
+        """)
+        st.divider()
+
+        default_loc_codes = st.session_state.get("loc_codes_input", "")  
+        loc_codes_input = st.text_area("Enter Location Codes (comma-separated):", value=default_loc_codes, placeholder="Type location codes...",key="loc_codes_input")
+        uploaded_file = st.file_uploader("Upload an Excel file", type=["xlsx"],key="uploaded_file")
+
+        if uploaded_file and st.session_state.loc_codes_input and st.button("🚀 Process Data"):
+            with st.spinner("Processing... Please wait 🔄"):
+                time.sleep(1) 
+                
+                try:
+                    df = pd.read_excel(uploaded_file, sheet_name="Cell", header=2, engine="openpyxl")
+                    df.columns = df.columns.str.strip().str.upper()
+                    
+                    required_columns = ["LOC CODE", "BSC", "CELL", "HSN", "DCHNO", "NUMREQEGPRSBPC", "HOP", "MAIO"]
+                    if not all(col in df.columns for col in required_columns):
+                        st.error(f"⚠️ Some required columns are missing. Expected: {', '.join(required_columns)}")
+                        st.write("Available columns:", df.columns.tolist())
+                    else:
+                        loc_codes = [code.strip() for code in loc_codes_input.split(",")]
+                        df_filtered = df[df["LOC CODE"].isin(loc_codes)]
+
+                        missing_data = []
+                        for loc_code in loc_codes:
+                            loc_data = df_filtered[df_filtered["LOC CODE"] == loc_code]
+                            if not loc_data.empty:
+                                missing_values = [col for col in required_columns if loc_data[col].isnull().any()]
+                                if missing_values:
+                                    missing_data.append(f"`{loc_code}` missing: {', '.join(missing_values)}")
+
+                        if missing_data:
+                            st.warning("⚠️ The following location codes have missing values:")
+                            st.write("🔍 " + " | ".join(missing_data))
+                        else:
+                            found_loc_codes = []
+                            missing_loc_codes = []
+                            extracted_files = ""
+
+                            for loc_code in loc_codes:
+                                result = df_filtered[df_filtered["LOC CODE"] == loc_code]
+
+                                if result.empty:
+                                    missing_loc_codes.append(loc_code)
+                                else:
+                                    found_loc_codes.append(loc_code)
+                                    formatted_texts = []
+
+                                    for _, row in result.iterrows():
+                                        extracted_values = row[["BSC", "CELL", "HSN", "DCHNO", "NUMREQEGPRSBPC", "HOP", "MAIO"]].copy()
+
+                                        extracted_values["DCHNO"] = extracted_values["DCHNO"].replace("&", ",")
+
+
+                                        for col in ["HSN", "DCHNO", "NUMREQEGPRSBPC", "MAIO"]:
+                                            extracted_values[col] = int(extracted_values[col]) if isinstance(extracted_values[col], float) and extracted_values[col].is_integer() else extracted_values[col]
+
+                                        formatted_text = f"""CREATE
+FDN:SubNetwork=ONRM_ROOT_MO_R,SubNetwork={extracted_values["BSC"]},MeContext={extracted_values["BSC"]},ManagedElement={extracted_values["BSC"]},BscFunction=1,BscM=1,GeranCellM=1,GeranCell={extracted_values["CELL"]},ChannelGroup=1
+hsn:{extracted_values["HSN"]}
+dchNo:[{extracted_values["DCHNO"]}]
+numReqEgprsBpc:{extracted_values["NUMREQEGPRSBPC"]}
+numReqBpc:8   # Default value
+tn:[1,2,7]    # Default value
+hop:{extracted_values["HOP"]}
+maio:{extracted_values["MAIO"]}\n\n"""
+
+                                        extracted_files += formatted_text
+
+                        st.session_state.extracted_content = extracted_files
+                        st.session_state.processed = True  
+
+                except Exception as e:
+                    st.error(f"⚠️ Error occurred: {e}")
+
+        if st.session_state.processed:
+            extracted_files = st.session_state.extracted_content
+
+            text_file = io.BytesIO(extracted_files.encode())
+
+            st.download_button(
+                label="📥 Download Script",
+                data=text_file,
+                file_name="CMBULK_TG_CELL_CHGR1.txt",
+                mime="text/plain")
+
+            if st.button("🗑️ Clear Data"):
+                st.session_state.clear() 
+                st.rerun() 
 
 
 # GAMES
