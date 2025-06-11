@@ -369,8 +369,8 @@ if "Tools" in add_radio:
         st.header("CHGR 1 Generator 🚀")
         st.divider()
         st.markdown("""
-        ✅ Upload the CIQ file  
-        ✅ Input one or more location codes    
+        ✅ Input one or more location codes     
+        ✅ Upload the CIQ file    
         ✅ Process Data to Generate script  
         ✅ Then download the script  
         """)
