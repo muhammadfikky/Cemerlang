@@ -370,7 +370,7 @@ if "Tools" in add_radio:
         st.divider()
         st.markdown("""
         ✅ Input one or more location codes     
-        ✅ Upload the CIQ file    
+        ✅ Upload 2G CIQ file    
         ✅ Process Data to Generate script  
         ✅ Then download the script  
         """)
@@ -378,7 +378,7 @@ if "Tools" in add_radio:
 
         default_loc_codes = st.session_state.get("loc_codes_input", "")  
         loc_codes_input = st.text_area("Enter Location Codes (comma-separated):", value=default_loc_codes, placeholder="Type location codes...",key="loc_codes_input")
-        uploaded_file = st.file_uploader("Upload an Excel file", type=["xlsx"],key="uploaded_file")
+        uploaded_file = st.file_uploader("Upload 2G CIQ file:", type=["xlsx"],key="uploaded_file")
 
         if uploaded_file and st.session_state.loc_codes_input and st.button("🚀 Process Data"):
             with st.spinner("Processing... Please wait 🔄"):
